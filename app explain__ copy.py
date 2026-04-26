@@ -1,17 +1,11 @@
 import streamlit as st
 from openai import OpenAI
-
-
-
-from dotenv import load_dotenv
-import os
-
-load_dotenv()  # loads variables from .env
-
-api_key = os.getenv("OPENAI_API_KEY")
-
 # ============================================
 # HR POLICY TEXT
+
+# This is just a long string containing your policy document. 
+# The f""" means it's an f-string — a Python string that can have variables inside it using curly braces. 
+# Nothing complex here — it's just data storage.
 # ============================================
 
 HR_Policy = f"""
@@ -137,10 +131,14 @@ Public Holidays:
 
 # ============================================
 # ChatGPT CLIENT SETUP
+# This creates a connection to OpenAI's servers. 
+# Think of it like opening a phone line to OpenAI. 
+# The api_key is your authentication — it tells OpenAI who you are and charges your account. 
+# Without this nothing works.
 # ============================================
 
 # Setup
-client = OpenAI(api_key=api_key)
+client = OpenAI(api_key="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")
 
 # ============================================
 # CORE FUNCTION — calls GPT API
@@ -171,6 +169,7 @@ def ask_hr_bot(question, chat_history):
     
     response = client.chat.completions.create(
     model="gpt-4o-mini",
+    # One token is roughly 0.75 words. 1024 tokens is about 750 words maximum response length.
     max_tokens=1024,
     messages=[
         {
@@ -192,10 +191,14 @@ def ask_hr_bot(question, chat_history):
             HR POLICY DOCUMENT:
             {HR_Policy}"""
         },
-        *messages   # your existing chat history
+        *messages   # your existing chat history Python unpacking 
+        # — it spreads your list of messages into the array. So if messages has 4 items, 
+        # this puts all 4 items individually into the array rather than a nested list.
+
     ]
 )
-    
+    # OpenAI returns a complex object. This extracts just the text of the response. choices[0] 
+    # because the API can return multiple response options — you just want the first one.
     return response.choices[0].message.content
 
 # ============================================
@@ -248,6 +251,16 @@ with st.sidebar:
 # ============================================
 # SESSION STATE — maintains chat history
 # ============================================
+
+
+
+# This is one of the most important concepts in Streamlit. 
+# Every time a user interacts with your app — types something, 
+# clicks a button — Streamlit reruns the entire Python script from top to bottom. 
+# Without session state, all your variables would reset to empty on every interaction and you'd lose the conversation history.
+# Session state is Streamlit's way of persisting data across these reruns. 
+# Think of it as a memory bank that survives each rerun. You check if the key exists first — if it doesn't, create it. 
+# If it does, leave it alone because it has existing data.
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -342,3 +355,7 @@ if user_input:
 
 st.divider()
 st.caption("HR Policy Assistant — Powered by GPT AI | For official HR matters contact hr@techcorp.com")
+
+
+
+
