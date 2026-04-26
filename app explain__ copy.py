@@ -138,7 +138,6 @@ Public Holidays:
 # ============================================
 
 # Setup
-client = OpenAI(api_key="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")
 
 # ============================================
 # CORE FUNCTION — calls GPT API
