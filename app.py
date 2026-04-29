@@ -146,6 +146,14 @@ client = OpenAI(api_key=api_key)
 # CORE FUNCTION — calls GPT API
 # ============================================
 
+def is_input_flagged(question):
+    response = client.moderations.create(
+        model="omni-moderation-latest",
+        input=question
+    )
+    result = response.results[0]
+    return result.flagged
+
 def ask_hr_bot(question, chat_history):
     
     # Build messages from chat history
@@ -156,6 +164,13 @@ def ask_hr_bot(question, chat_history):
     #chat_history likely looks like:[
     #{"role": "user", "content": "Hi"},
     #{"role": "assistant", "content": "Hello!"}]
+    
+    if is_input_flagged(question):
+        return """⚠️ I'm unable to process this request. 
+            If you have a genuine HR query please contact 
+            hr@techcorp.com directly.
+    
+            Category: Out_of_scope"""
     
     for msg in chat_history:
         messages.append({
@@ -177,7 +192,8 @@ def ask_hr_bot(question, chat_history):
             "role": "system",
             "content": f"""You are a helpful and friendly HR assistant for TechCorp India. 
             Your job is to answer employee questions accurately and clearly based strictly 
-            on the following HR policy document.
+            on the following HR policy document. After answering the required question, you
+            must write the category of the question in the end in the format - "Category: "
 
             RULES:
             - Answer only based on information in the policy document below
@@ -188,6 +204,7 @@ def ask_hr_bot(question, chat_history):
             - Keep answers concise and easy to understand
             - When relevant, mention the specific policy section you're referring to
             - Never make up information that isn't in the document
+            
 
             HR POLICY DOCUMENT:
             {HR_Policy}"""
