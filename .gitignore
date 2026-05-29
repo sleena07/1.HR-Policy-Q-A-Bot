@@ -1,16 +1,36 @@
+# Secrets
 .env
+
+# Python
 __pycache__/
 *.pyc
+
+# Virtual environments
 venv/
+.venv/
+
+# Vector DB
 chroma_db/
+
+# IDE
 .vscode/
 .idea/
+
+# Mac
 .DS_Store
+
+# Logs
 *.log
+
+# Jupyter
 .ipynb_checkpoints/
+
+# Experimental files
 upgrade.py
 app_V1.py
 app_V2.py
 rag_V1.py
+
+# Notes / scratch notebooks
 Interview Questions.ipynb
 Load Mutiple PDFs Code.ipynb
