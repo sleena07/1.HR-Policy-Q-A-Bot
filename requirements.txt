@@ -1,6 +1,12 @@
-streamlit
-openai>=1.0.0
-pandas
-numpy
-python-dotenv
+streamlit==1.45.1
+openai==1.82.1
+python-dotenv==1.1.0
+
+langchain==0.1.20
+langchain-openai==0.1.7
+langchain-community==0.0.38
+langchain-text-splitters==0.0.2
+
+chromadb==0.5.0
+tiktoken==0.7.0
 

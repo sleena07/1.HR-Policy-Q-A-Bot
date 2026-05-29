@@ -2,4 +2,15 @@
 __pycache__/
 *.pyc
 venv/
+chroma_db/
+.vscode/
+.idea/
+.DS_Store
+*.log
+.ipynb_checkpoints/
 upgrade.py
+app_V1.py
+app_V2.py
+rag_V1.py
+Interview Questions.ipynb
+Load Mutiple PDFs Code.ipynb
