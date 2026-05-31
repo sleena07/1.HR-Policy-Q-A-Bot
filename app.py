@@ -3,12 +3,19 @@
 # ============================================
 
 import streamlit as st
+
+st.set_page_config(
+    page_title="HR Policy Assistant",
+    page_icon="👩‍💼",
+    layout="centered"
+)
+
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.chains import ConversationalRetrievalChain
@@ -231,12 +238,12 @@ def ask_hr_bot(question):
     # Moderation check
     if is_input_flagged(question):
         return """⚠️ I'm unable to process this request.
-Please contact hr@techcorp.com"""
+    Please contact hr@techcorp.com"""
 
     # Injection check
     if is_prompt_injection(question):
         return """⚠️ Unsafe request detected.
-Please contact hr@techcorp.com"""
+    Please contact hr@techcorp.com"""
 
     # Conversational RAG response
     response = qa_chain.invoke({
@@ -258,12 +265,6 @@ Please contact hr@techcorp.com"""
 # ============================================
 # STREAMLIT UI
 # ============================================
-
-st.set_page_config(
-    page_title="HR Policy Assistant",
-    page_icon="👩‍💼",
-    layout="centered"
-)
 
 st.title("👩‍💼 HR Policy Assistant")
 
