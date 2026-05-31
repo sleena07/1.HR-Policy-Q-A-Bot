@@ -94,7 +94,6 @@ def load_vector_db():
             embedding=embedding,
             persist_directory="chroma_db"
         )
-        vectordb.persist()
 
     return vectordb
 
