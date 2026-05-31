@@ -52,7 +52,8 @@ llm = ChatOpenAI(
 # VECTOR DATABASE SETUP
 # ============================================
 
-@st.cache_resource
+
+
 def load_vector_db():
     
     embedding = OpenAIEmbeddings(
@@ -147,6 +148,7 @@ RULES:
 - Ask relevant follow up questions where helpful
 - Mention policy section if applicable
 - Never make up information
+- Summarize the chat and relavant points for the user if they ask.
 
 HR POLICY CONTEXT:
 {context}
@@ -163,7 +165,7 @@ ANSWER:
 # CONVERSATIONAL RAG CHAIN
 # ============================================
 
-@st.cache_resource
+
 def get_qa_chain():
 
     return ConversationalRetrievalChain.from_llm(
