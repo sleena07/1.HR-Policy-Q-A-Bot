@@ -9,3 +9,4 @@ chromadb
 tiktoken
 python-dotenv
 pypdf
+langchain-retrievers
