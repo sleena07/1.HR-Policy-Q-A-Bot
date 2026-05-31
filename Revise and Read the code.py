@@ -576,11 +576,12 @@ if typed_input:
 
 if user_input:
 
-    # Show user message
+    # Show user message Creates user bubble
     with st.chat_message("user"):
-
+        # Displays question.
         st.markdown(user_input)
 
+    # store user message
     st.session_state.messages.append({
 
         "role": "user",
@@ -588,9 +589,9 @@ if user_input:
         "content": user_input
     })
 
-    # Generate response
+    # Generate response Assistant bubble.
     with st.chat_message("assistant"):
-
+        # Temporary loading animation.
         with st.spinner("Searching HR policies..."):
 
             try:
