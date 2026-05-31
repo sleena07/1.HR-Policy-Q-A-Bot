@@ -22,6 +22,16 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.prompts import PromptTemplate
 
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer
+)
+
+from reportlab.lib.styles import getSampleStyleSheet
+
+from io import BytesIO
+
 # ============================================
 # ENVIRONMENT VARIABLES
 # ============================================
@@ -148,7 +158,6 @@ RULES:
 - Ask relevant follow up questions where helpful
 - Mention policy section if applicable
 - Never make up information
-- Summarize the chat and relavant points for the user if they ask.
 
 HR POLICY CONTEXT:
 {context}
@@ -232,6 +241,83 @@ Reply YES or NO.
 
 
 # ============================================
+# Summarize Conversation
+# ============================================
+
+
+def summarize_conversation():
+
+    chat_text = "\n".join(
+        [
+            f"{msg['role']}: {msg['content']}"
+            for msg in st.session_state.messages
+        ]
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": """
+Summarize the HR conversation.
+
+Include:
+- User questions
+- Key HR policy information provided
+- Important recommendations
+- Action items if any
+
+Keep it concise and professional.
+"""
+            },
+            {
+                "role": "user",
+                "content": chat_text
+            }
+        ]
+    )
+
+    return response.choices[0].message.content
+
+
+# ============================================
+# Create PDF Summary
+# ============================================
+
+
+def create_pdf(summary):
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(buffer)
+
+    styles = getSampleStyleSheet()
+
+    content = [
+
+        Paragraph(
+            "HR Conversation Summary",
+            styles["Title"]
+        ),
+
+        Spacer(1, 12),
+
+        Paragraph(
+            summary.replace("\n", "<br/>"),
+            styles["BodyText"]
+        )
+    ]
+
+    doc.build(content)
+
+    buffer.seek(0)
+
+    return buffer
+
+
+# ============================================
 # MAIN CHAT FUNCTION
 # ============================================
 
@@ -302,6 +388,11 @@ with st.sidebar:
             st.session_state.selected_question = question
 
     st.divider()
+    
+    
+    if st.button("📝 Summarize Conversation",use_container_width=True):
+        with st.spinner("Generating conversation summary..."):
+            st.session_state.summary = summarize_conversation()
 
     if st.button("🗑️ Clear Conversation", use_container_width=True):
         if "memory" in st.session_state:
@@ -352,6 +443,24 @@ What would you like to know?
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
+        
+if "summary" not in st.session_state:
+    st.session_state.summary = ""
+
+if st.session_state.summary:
+    st.subheader("Conversation Summary")
+    st.markdown(
+        st.session_state.summary
+    )
+    pdf_file = create_pdf(
+        st.session_state.summary
+    )
+    st.download_button(
+        label="📄 Download PDF",
+        data=pdf_file,
+        file_name="hr_conversation_summary.pdf",
+        mime="application/pdf"
+    )
 
 
 # ============================================
@@ -375,6 +484,8 @@ if typed_input:
 # ============================================
 
 if user_input:
+    
+    st.session_state.summary = ""
 
     with st.chat_message("user"):
         st.markdown(user_input)
